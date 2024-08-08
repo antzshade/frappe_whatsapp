@@ -12,7 +12,8 @@
   "type",
   "section_break_xioa",
   "phone_recipient",
-  "status_message"
+  "status_message",
+  "wam_id"
  ],
  "fields": [
   {
@@ -52,11 +53,17 @@
    "fieldname": "status_message",
    "fieldtype": "Data",
    "label": "Status Message"
+  },
+  {
+   "description": "<b> Note :</b> Automatically filled when data match with the template",
+   "fieldname": "wam_id",
+   "fieldtype": "Data",
+   "label": "WAM ID"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-04-23 15:29:04.243284",
+ "modified": "2024-08-06 10:31:58.583890",
  "modified_by": "Administrator",
  "module": "Frappe Whatsapp",
  "name": "WhatsApp Notification Log",

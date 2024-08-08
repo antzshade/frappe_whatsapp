@@ -63,9 +63,11 @@ def process_whatsapp_notification_log(data):
 
 				final_dict["phone_recipient"] = changes["value"]['statuses'][0]['recipient_id']
 				final_dict["status_message"] = changes["value"]['statuses'][0]['status']
-
+				final_dict["wam_id"] = changes["value"]['statuses'][0]['id']
 	except:
-		frappe.log_error(message = frappe.get_traceback(), title = ("test wa: Error Title"))
+		frappe.log_error(message = frappe.get_traceback(), title = ("Webhook WA: Error when parsing data"))
+		frappe.log_error(str(data), title = ("Webhook WA: Error when parsing data"))
+
 
 	doc = frappe.get_doc(final_dict).insert(ignore_permissions=True)
 

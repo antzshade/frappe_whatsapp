@@ -165,12 +165,13 @@
    "fieldname": "masked_phone_number",
    "fieldtype": "Data",
    "label": "Masked Phone Number",
+   "no_copy": 1,
    "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-05-13 16:36:37.681840",
+ "modified": "2024-08-06 09:53:58.323692",
  "modified_by": "Administrator",
  "module": "Frappe Whatsapp",
  "name": "WhatsApp Message",
