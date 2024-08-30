@@ -25,6 +25,7 @@ def get():
 
 	if frappe.form_dict.get("hub.verify_token") != webhook_verify_token:
 		frappe.throw("Verify token does not match")
+		frappe.log_error(message = frappe.get_traceback(), title = ("Webhook WA: Error Verify Token does not match"))
 
 	return Response(hub_challenge, status=200)
 
@@ -58,7 +59,7 @@ def process_whatsapp_notification_log(data):
 			if changes.get("field") == "message_template_status_update":
 				final_dict["type"] = "Template"
 				
-			elif changes.get("field") == "messages":
+			elif changes.get("field") == "messages" and (changes.get("value") or {}).get("statuses"):
 				final_dict["type"] = "Message"
 
 				final_dict["phone_recipient"] = changes["value"]['statuses'][0]['recipient_id']
@@ -66,8 +67,7 @@ def process_whatsapp_notification_log(data):
 				final_dict["wam_id"] = changes["value"]['statuses'][0]['id']
 	except:
 		frappe.log_error(message = frappe.get_traceback(), title = ("Webhook WA: Error when parsing data"))
-		frappe.log_error(str(data), title = ("Webhook WA: Error when parsing data"))
-
+		frappe.log_error(message = str(data), title = ("Webhook WA: Error when parsing data"))
 
 	doc = frappe.get_doc(final_dict).insert(ignore_permissions=True)
 
@@ -81,7 +81,6 @@ def process_post_message(data):
 			messages = data["entry"][0]["changes"][0]["value"].get("messages", [])
 		except KeyError:
 			messages = data["entry"]["changes"][0]["value"].get("messages", [])
-
 		if messages:
 			for message in messages:
 				message_type = message['type']
