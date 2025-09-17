@@ -200,9 +200,12 @@ def update_template_status(data):
 
 def update_message_status(data):
 	"""Update message status."""
+	print("update_message_status")
 	id = data['statuses'][0]['id']
 	status = data['statuses'][0]['status']
 	conversation = data['statuses'][0].get('conversation', {}).get('id')
+	print(id)
+
 	name = frappe.db.get_value("WhatsApp Message", filters={"message_id": id})
 
 
@@ -220,6 +223,7 @@ def update_message_status(data):
 		dict_data.update({
 			"conversation_id" : conversation
 		})
+	print(name)
 	frappe.db.set_value("WhatsApp Message",name, dict_data, update_modified=True)
 
 

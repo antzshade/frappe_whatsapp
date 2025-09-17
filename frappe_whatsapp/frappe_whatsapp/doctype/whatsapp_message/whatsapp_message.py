@@ -241,6 +241,42 @@ class WhatsAppMessage(Document):
 		return number
 	
 
+# ================= Webhook =================
+
+@frappe.whitelist(allow_guest=False)
+def refetch_status_from_whatsapp_notification_log(id):
+	from frappe_whatsapp.utils.webhook import update_status
+ 
+	
+	data_sql_wa = frappe.db.sql(
+	"""
+	SELECT
+		meta_data
+	FROM `tabWhatsApp Notification Log`
+	WHERE
+		meta_data LIKE %(id)s
+	""",
+	{
+		"id" : f"%{id}%"
+	}, as_dict = 1)
+
+	for item_sql in data_sql_wa:
+		meta_data_string= item_sql.get("meta_data") or {}
+		meta_data = json.loads(meta_data_string)
+		print(meta_data)
+		
+
+		changes = None
+		try:
+			changes = meta_data["entry"][0]["changes"][0]
+		except KeyError:
+			changes = meta_data["entry"]["changes"][0]
+
+		update_status(changes)
+	
+	return {"status" : True}
+
+
 
 # ================= Helper =================
 
