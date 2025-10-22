@@ -14,6 +14,8 @@ import os
 import mimetypes
 import requests
 
+import re
+
 
 class WhatsAppTemplates(WhatsAppAPIController):
 	"""Create whatsapp template."""
@@ -44,15 +46,15 @@ class WhatsAppTemplates(WhatsAppAPIController):
 
 
 	def autoname(self):
-		if self.get("template_title"):
-			self.template_name = self.template_title.lower().replace(' ', '_')
+		self.change_template_name()
+			
 
 	def before_save(self):
 		self.fill_language_code()
 	
 	def before_submit(self):
 		"""Set template code."""
-		self.template_name = self.template_name.lower().replace(' ', '_')
+		self.change_template_name()
 		self.language_code = frappe.db.get_value(
 			"Language", self.language
 		).replace('-', '_')
@@ -378,6 +380,13 @@ class WhatsAppTemplates(WhatsAppAPIController):
 		# 	frappe.db.commit()
 
 	# ================= End of Hooks =================
+
+	def change_template_name(self):
+		if self.get("template_title"):
+			temp_template_name = self.template_title.lower().replace(' ', '_')
+			temp_template_name = re.sub(r'[^A-Za-z_]', '', temp_template_name)
+			self.template_name = temp_template_name
+
 	def fill_language_code(self):
 		""" untuk mengisi language_code dari language"""
 		if self.get("language"):
