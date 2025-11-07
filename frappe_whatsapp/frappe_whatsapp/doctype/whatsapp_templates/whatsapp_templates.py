@@ -393,6 +393,41 @@ class WhatsAppTemplates(WhatsAppAPIController):
 			self.language_code = frappe.db.get_value(
 					"Language", self.get("language")
 				).replace('-', '_')
+			
+	
+	@frappe.whitelist(allow_guest=False)
+	def fetch_template_meta(self):
+		"""Fetch templates from meta."""
+		# get credentials
+		settings = frappe.get_doc("WhatsApp Settings", "WhatsApp Settings")
+		token = settings.get_password("token")
+		url = settings.url
+		version = settings.version
+		business_id = settings.business_id
+		template_id = self.get("id")
+
+		headers = {
+			"authorization": f"Bearer {token}",
+			"content-type": "application/json"
+		}
+
+		try:
+			response = make_request(
+				"GET",
+				f"{url}/{version}/{template_id}?fields=name,language,category,status",
+				headers=headers,
+			)
+			print(response)
+
+			data_json = response.json()
+			if data_json.get("status") == "APPROVED":
+				frappe.db.set_value("WhatsApp Templates", self.get("name"), {"status" : data_json.get("status")})
+				
+		except Exception as e:
+			pass
+
+
+
 
 
 
@@ -513,3 +548,16 @@ def send_enqueue_data(name, data):
 		#     # title=res.get("error_user_title", "Error"),
 		# )
 		frappe.log_error(message = frappe.get_traceback(), title = ("wa_template: send_template"))
+
+
+
+@frappe.whitelist(allow_guest=False)
+def check_wa_template_status(name):
+	try:
+		doc = frappe.get_doc("WhatsApp Templates", name)
+		doc.fetch_template_meta()
+		doc.db_update()
+		frappe.db.commit()
+
+	except Exception as e:
+		frappe.log_error(message = frappe.get_traceback(), title = ("wa_template: check_wa_template_status"))
