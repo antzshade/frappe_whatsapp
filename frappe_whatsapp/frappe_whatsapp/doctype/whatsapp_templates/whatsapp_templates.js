@@ -20,9 +20,12 @@ frappe.ui.form.on('WhatsApp Templates', {
 				name: cur_frm.doc.name
 			},
 			callback: function (r) {
+				frappe.show_alert({ 
+					message: __("Please wait a minute..."),
+					indicator: "info",}, 10);
 				if (r.message) {
 					// frappe.msgprint(r.message);
-					cur_frm.reload_doc();
+					// cur_frm.reload_doc();
 				}
 			}
 				});
